@@ -2,10 +2,15 @@
 // after the first visit. All conversion work happens on-device; this worker
 // never sends any file content anywhere.
 
-const CACHE_NAME = "bindery-v2";
+const CACHE_NAME = "bindery-v3";
 const APP_SHELL = [
   "./index.html",
   "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/icon-512-maskable.png",
+  "./icons/icon-apple-touch.png",
+  "./icons/favicon.png",
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
