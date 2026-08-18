@@ -1,7 +1,7 @@
 {
-  "name": "Bindery — PDF to EPUB",
+  "name": "Bindery — PDF to EPUB / CBZ",
   "short_name": "Bindery",
-  "description": "Convert PDF files into EPUB ebooks, entirely on your device.",
+  "description": "Convert PDF files into EPUB ebooks or CBZ comic archives, entirely on your device.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

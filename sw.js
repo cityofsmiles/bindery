@@ -2,7 +2,7 @@
 // after the first visit. All conversion work happens on-device; this worker
 // never sends any file content anywhere.
 
-const CACHE_NAME = "bindery-v3";
+const CACHE_NAME = "bindery-v4";
 const APP_SHELL = [
   "./index.html",
   "./manifest.json",

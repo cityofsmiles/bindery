@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bindery — PDF to EPUB / CBZ</title>
-<meta name="description" content="Convert PDF files into EPUB ebooks or CBZ comic archives, entirely on your device. No uploads, no server.">
+<title>Bindery — PDF to EPUB</title>
+<meta name="description" content="Convert PDF files into EPUB ebooks, entirely on your device. No uploads, no server.">
 <meta name="theme-color" content="#15130F">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icons/favicon.png">
@@ -149,9 +149,9 @@
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
   @media (max-width:520px){ .row2{grid-template-columns:1fr;} }
 
-  .mode-toggle{display:flex; gap:10px; flex-wrap:wrap;}
+  .mode-toggle{display:flex; gap:10px;}
   .mode-opt{
-    flex:1 1 150px; border:1px solid var(--line); border-radius:8px; padding:14px;
+    flex:1; border:1px solid var(--line); border-radius:8px; padding:14px;
     cursor:pointer; background:var(--ink);
   }
   .mode-opt.active{border-color:var(--brass); background:rgba(201,162,39,0.06);}
@@ -289,7 +289,7 @@
       </svg>
       <div>
         <h1>Bindery</h1>
-        <p class="tag">PDF → EPUB / CBZ, entirely on your device</p>
+        <p class="tag">PDF → EPUB, entirely on your device</p>
       </div>
     </div>
     <button class="install-btn" id="installBtn">Install app</button>
@@ -357,10 +357,6 @@
           <div class="t"><input type="radio" name="mode" value="fixed"> Page images</div>
           <div class="d">Keeps each page as a grayscale picture sized to your Paperwhite's screen. Best for scans, worksheets, or pages with diagrams and equations.</div>
         </label>
-        <label class="mode-opt" id="modeCbzLabel">
-          <div class="t"><input type="radio" name="mode" value="cbz"> Comic archive (CBZ)</div>
-          <div class="d">Renders each page as a full-color image and zips it as a .cbz. Opens in comic readers like Moon+ Reader, YACReader, or Komga.</div>
-        </label>
       </div>
     </div>
 
@@ -405,28 +401,6 @@
       </div>
     </details>
 
-    <details class="adv hidden" id="advCbz">
-      <summary>Comic archive settings</summary>
-      <div class="inner">
-        <div class="field" style="margin-bottom:14px;">
-          <label for="cbzQualitySlider">Page image resolution</label>
-          <input type="range" id="cbzQualitySlider" min="1200" max="3200" value="2200" step="200">
-          <div class="rangeval"><span id="cbzQualityPx">2200</span>px on the long edge — higher looks sharper but makes a larger file</div>
-        </div>
-        <div class="field" style="margin-bottom:10px;">
-          <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:normal; font-weight:400; color:var(--paper); cursor:pointer;">
-            <input type="checkbox" id="cbzGrayscale" style="margin:0;"> Grayscale (E Ink friendly)
-          </label>
-        </div>
-        <div class="field" style="margin-bottom:0;">
-          <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:normal; font-weight:400; color:var(--paper); cursor:pointer;">
-            <input type="checkbox" id="cbzManga" style="margin:0;"> Manga (right-to-left reading order)
-          </label>
-        </div>
-        <p class="hint">Pages stay in full color by default. A ComicInfo.xml file with the title, author, and reading direction is included for readers that support it.</p>
-      </div>
-    </details>
-
     <p class="hint" style="margin-top:4px;">Every EPUB gets a real cover pulled from page 1, Kindle-compatible metadata, and (in page-image mode) grayscale rendering to match your Paperwhite's E Ink screen.</p>
 
     <button class="go-btn" id="convertBtn">Convert to EPUB</button>
@@ -451,9 +425,9 @@
         <rect x="10" y="6" width="7" height="44" rx="3" fill="#24402E"/>
         <path d="M23 28l6 7 12-14" stroke="#8A7327" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <h3 id="resultTitle">Your EPUB is bound and ready</h3>
+      <h3>Your EPUB is bound and ready</h3>
       <p id="resultSub">—</p>
-      <p class="hint" id="resultHint" style="margin-bottom:20px;">To get it onto your Paperwhite: use the Send to Kindle app, or email the file to your Kindle's Send-to-Kindle address. Recent Kindle firmware accepts EPUB directly, no conversion step needed.</p>
+      <p class="hint" style="margin-bottom:20px;">To get it onto your Paperwhite: use the Send to Kindle app, or email the file to your Kindle's Send-to-Kindle address. Recent Kindle firmware accepts EPUB directly, no conversion step needed.</p>
       <div class="actions">
         <a href="#" class="btn primary" id="downloadBtn" download>Download EPUB</a>
         <button class="btn ghost" id="startOverBtn" type="button">Convert another</button>
@@ -468,7 +442,7 @@
 
   <footer>
     Works fully offline once loaded · No files are uploaded anywhere<br>
-    <span class="mono">v1.1</span> · Built with pdf.js and JSZip
+    <span class="mono">v1.0</span> · Built with pdf.js and JSZip
   </footer>
 </div>
 
@@ -493,11 +467,8 @@
   const downloadBtn = $("downloadBtn"), resultSub = $("resultSub");
   const coverPreview = $("coverPreview"), genericIcon = $("genericIcon");
   const startOverBtn = $("startOverBtn"), errorResetBtn = $("errorResetBtn"), errorBox = $("errorBox");
-  const modeReflowLabel = $("modeReflowLabel"), modeFixedLabel = $("modeFixedLabel"), modeCbzLabel = $("modeCbzLabel");
-  const advReflow = $("advReflow"), advFixed = $("advFixed"), advCbz = $("advCbz");
-  const cbzQualitySlider = $("cbzQualitySlider"), cbzQualityPx = $("cbzQualityPx");
-  const cbzGrayscale = $("cbzGrayscale"), cbzManga = $("cbzManga");
-  const resultTitle = $("resultTitle"), resultHint = $("resultHint");
+  const modeReflowLabel = $("modeReflowLabel"), modeFixedLabel = $("modeFixedLabel");
+  const advReflow = $("advReflow"), advFixed = $("advFixed");
 
   const KINDLE_PRESETS = {
     pw12: {label:"Kindle Paperwhite 12th Gen", w:1264, h:1680},
@@ -559,19 +530,14 @@
 
   document.querySelectorAll('input[name="mode"]').forEach(r => {
     r.addEventListener("change", () => {
-      const mode = document.querySelector('input[name="mode"]:checked').value;
-      modeReflowLabel.classList.toggle("active", mode === "reflow");
-      modeFixedLabel.classList.toggle("active", mode === "fixed");
-      modeCbzLabel.classList.toggle("active", mode === "cbz");
-      advReflow.classList.toggle("hidden", mode !== "reflow");
-      advFixed.classList.toggle("hidden", mode !== "fixed");
-      advCbz.classList.toggle("hidden", mode !== "cbz");
-      convertBtn.textContent = mode === "cbz" ? "Convert to CBZ" : "Convert to EPUB";
+      const fixed = document.querySelector('input[name="mode"]:checked').value === "fixed";
+      modeReflowLabel.classList.toggle("active", !fixed);
+      modeFixedLabel.classList.toggle("active", fixed);
+      advReflow.classList.toggle("hidden", fixed);
+      advFixed.classList.toggle("hidden", !fixed);
     });
   });
   advFixed.classList.add("hidden");
-  advCbz.classList.add("hidden");
-  cbzQualitySlider.addEventListener("input", () => cbzQualityPx.textContent = cbzQualitySlider.value);
 
   // ---------- Logging / progress UI ----------
   function log(msg, cls){
@@ -822,16 +788,6 @@ ${coverSpine}${spineItems}
 ${coverGuide}</package>`;
   }
 
-  function buildComicInfo({title, author, numPages, manga}){
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<ComicInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Title>${escapeXml(title)}</Title>
-  <Writer>${escapeXml(author || "Unknown")}</Writer>
-  <PageCount>${numPages}</PageCount>
-  <Manga>${manga ? "YesAndRightToLeft" : "No"}</Manga>
-</ComicInfo>`;
-  }
-
   // ---------- Reflowable chapter HTML ----------
   function chapterXhtml(title, paragraphsHtml){
     return `<?xml version="1.0" encoding="UTF-8"?>
@@ -902,9 +858,6 @@ ${paragraphsHtml}
     const fallback = parseInt(fallbackSplit.value, 10);
     const targetLongEdge = parseInt(qualitySlider.value, 10);
     const deviceKey = deviceSelect.value;
-    const cbzQuality = parseInt(cbzQualitySlider.value, 10);
-    const cbzGray = cbzGrayscale.checked;
-    const cbzMangaFlag = cbzManga.checked;
 
     try{
       setStatus("Opening PDF…");
@@ -935,13 +888,11 @@ ${paragraphsHtml}
       }
 
       const zip = new JSZip();
-      if(mode !== "cbz"){
-        zip.file("mimetype", "application/epub+zip", {compression:"STORE"});
-        zip.file("META-INF/container.xml", buildContainerXml());
-        if(coverBlob){
-          zip.file("OEBPS/images/cover.jpg", coverBlob);
-          zip.file("OEBPS/text/cover.xhtml", coverXhtml());
-        }
+      zip.file("mimetype", "application/epub+zip", {compression:"STORE"});
+      zip.file("META-INF/container.xml", buildContainerXml());
+      if(coverBlob){
+        zip.file("OEBPS/images/cover.jpg", coverBlob);
+        zip.file("OEBPS/text/cover.xhtml", coverXhtml());
       }
 
       let chapters = [];
@@ -1019,7 +970,7 @@ ${paragraphsHtml}
         }
         zip.file("OEBPS/styles.css", CSS_REFLOW);
 
-      } else if(mode === "fixed"){
+      } else {
         // fixed-layout image mode
         const preset = KINDLE_PRESETS[deviceKey];
         setStatus("Rendering pages…", preset ? `Sizing to ${preset.label} (${preset.w}×${preset.h})` : "Rasterizing each page as an image.");
@@ -1049,64 +1000,27 @@ ${paragraphsHtml}
           canvas.width = 0; canvas.height = 0;
         }
         zip.file("OEBPS/styles.css", CSS_FIXED);
-
-      } else {
-        // comic archive (cbz) mode — plain zip of full-color page images
-        setStatus("Rendering pages…", `Long edge ${cbzQuality}px${cbzGray ? " · grayscale" : ""}`);
-        for(let p=1; p<=numPages; p++){
-          const page = await pdfDoc.getPage(p);
-          const viewport1 = page.getViewport({scale:1});
-          const scale = cbzQuality / Math.max(viewport1.width, viewport1.height);
-          const viewport = page.getViewport({scale});
-          const canvas = document.createElement("canvas");
-          canvas.width = Math.round(viewport.width);
-          canvas.height = Math.round(viewport.height);
-          const ctx = canvas.getContext("2d");
-          await page.render({canvasContext: ctx, viewport}).promise;
-          if(cbzGray) toGrayscale(ctx, canvas.width, canvas.height);
-          const blob = await new Promise(res => canvas.toBlob(res, "image/jpeg", 0.9));
-          const imgFile = `page-${String(p).padStart(4,"0")}.jpg`;
-          zip.file(imgFile, blob);
-          pulseSpine(leaves, p/numPages);
-          setStatus("Rendering pages…", `Page ${p} of ${numPages}`);
-          if(p % 5 === 0 || p === numPages) log(`Rendered page ${p}/${numPages}`);
-          canvas.width = 0; canvas.height = 0;
-        }
-        zip.file("ComicInfo.xml", buildComicInfo({title, author, numPages, manga: cbzMangaFlag}));
       }
 
-      if(mode !== "cbz"){
-        setStatus("Writing EPUB package…");
-        const bookId = uuid();
-        zip.file("OEBPS/nav.xhtml", buildNav(chapters));
-        zip.file("OEBPS/toc.ncx", buildNcx(chapters, bookId, title));
-        zip.file("OEBPS/content.opf", buildOpf({
-          title, author, lang, bookId, chapters, manifestExtra,
-          fixedLayout: mode === "fixed",
-          hasCover: !!coverBlob
-        }));
-      } else {
-        setStatus("Writing comic archive…");
-      }
+      setStatus("Writing EPUB package…");
+      const bookId = uuid();
+      zip.file("OEBPS/nav.xhtml", buildNav(chapters));
+      zip.file("OEBPS/toc.ncx", buildNcx(chapters, bookId, title));
+      zip.file("OEBPS/content.opf", buildOpf({
+        title, author, lang, bookId, chapters, manifestExtra,
+        fixedLayout: mode === "fixed",
+        hasCover: !!coverBlob
+      }));
 
       log("Compressing…");
-      const mimeType = mode === "cbz" ? "application/vnd.comicbook+zip" : "application/epub+zip";
-      const blob = await zip.generateAsync({type:"blob", mimeType, compression:"DEFLATE", compressionOptions:{level: mode === "cbz" ? 4 : 6}});
+      const blob = await zip.generateAsync({type:"blob", mimeType:"application/epub+zip", compression:"DEFLATE", compressionOptions:{level:6}});
 
       if(objectUrl) URL.revokeObjectURL(objectUrl);
       objectUrl = URL.createObjectURL(blob);
       const safeName = (title || "book").replace(/[\\/:*?"<>|]+/g,"").trim() || "book";
       downloadBtn.href = objectUrl;
-      const ext = mode === "cbz" ? "cbz" : "epub";
-      downloadBtn.download = `${safeName}.${ext}`;
-      downloadBtn.textContent = mode === "cbz" ? "Download CBZ" : "Download EPUB";
-      resultTitle.textContent = mode === "cbz" ? "Your CBZ is packed and ready" : "Your EPUB is bound and ready";
-      resultHint.textContent = mode === "cbz"
-        ? "Open it with a comic reader app (Moon+ Reader, Perfect Viewer, YACReader, Komga, and most others all read .cbz directly)."
-        : "To get it onto your Paperwhite: use the Send to Kindle app, or email the file to your Kindle's Send-to-Kindle address. Recent Kindle firmware accepts EPUB directly, no conversion step needed.";
-      resultSub.textContent = mode === "cbz"
-        ? `${numPages} page${numPages===1?"":"s"} · ${humanSize(blob.size)}`
-        : `${chapters.length} section${chapters.length===1?"":"s"} · ${humanSize(blob.size)}`;
+      downloadBtn.download = `${safeName}.epub`;
+      resultSub.textContent = `${chapters.length} section${chapters.length===1?"":"s"} · ${humanSize(blob.size)}`;
 
       if(coverObjectUrl){ URL.revokeObjectURL(coverObjectUrl); coverObjectUrl = null; }
       if(coverBlob){
@@ -1165,7 +1079,7 @@ ${paragraphsHtml}
       const name = decodeURIComponent(resp.headers.get("X-Shared-Name") || "shared.pdf");
       const type = resp.headers.get("Content-Type") || "application/pdf";
       const file = new File([blob], name, {type});
-      const cache = await caches.open("bindery-v4");
+      const cache = await caches.open("bindery-v3");
       await cache.delete("shared-pdf-file");
       acceptFile(file);
     }catch(e){ console.warn("Bindery: could not load shared file", e); }
